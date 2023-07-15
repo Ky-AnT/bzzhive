@@ -1,0 +1,36 @@
+@import url('https://fonts.googleapis.com/css2?family=Montserrat&display=swap');
+.content {
+    margin-top: 10%;
+    text-align: center;
+}
+
+.button {
+    background-color: #f5b942;
+    color: white;
+    padding: 5px 10px;
+    border-radius: 5px;
+    border: none;
+    cursor: pointer;
+}
+
+.topNav {
+    height: 7vh;
+    border-bottom: 1px solid #e8e6e1;
+}
+
+.icon {
+    transition: transform .7s ease-in-out;
+}
+
+.icon:hover {
+    animation-name: breathe;
+    animation-duration: 2s;
+    animation-iteration-count: infinite;
+    cursor: pointer;
+}
+
+@keyframes breathe {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.1); }
+    100% { transform: scale(1); }
+}

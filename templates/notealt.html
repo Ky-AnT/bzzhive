@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <style>
+      @import url('https://fonts.googleapis.com/css2?family=Montserrat&display=swap');
+      .titleInput {
+        border: none;
+        outline: none;
+        font-size: 20px;
+      }
+      .titleInput:focus {
+        border-bottom: 1px solid blue;
+        transition: width 1s;
+      }
+      .shareButton {
+        border: none;
+        background-color: #007bff;
+        color: white;
+        padding: 5px 10px;
+        border-radius: 5px;
+        cursor: pointer;
+      }
+      .readOnly {
+        background-color: #f1f1f1;
+      }
+    </style>
+  </head>
+  <body style="text-align: center; font-family: Montserrat">
+    <form method="POST" action="/note/{{ note['id'] }}">
+      {% if not shared_doc %}
+      <input class="titleInput" type="text" name="title" value="{{ note['title'] }}" placeholder="Title">
+      <input type="submit" value="Save Changes" >
+      <br><br>
+      {% endif %}
+      <textarea style="outline-width: 0px; border: 1px; border: solid 1px black; height: 60vh; resize: none; width: 30%" name="content" rows="10" cols="50"  {% if shared_doc %}disabled{% endif %}>{{ note['content'] }}</textarea>
+    </form>
+    <br>
+    {% if not shared_doc %}
+      <p>Shared with: {{ note['shared_with'] }}</p>
+      <button class="shareButton" onclick="shareNote()">Share Note</button>
+    {% endif %}
+    
+      <form id="shareForm" style="display: none;" method="POST" action="/share_note/{{ note['id'] }}">
+        <input type="text" name="shared_with" placeholder="Username" required>
+        <input type="button" value="Share" onclick="submitShareForm()">
+      </form>
+    {{ error }}
+    <p><a href="/dashboard">Back to Dashboard</a></p>
+    <script>
+      function shareNote() {
+        var shareForm = document.getElementById('shareForm');
+        shareForm.style.display = 'block';
+      }
+      
+      function submitShareForm() {
+        var shareForm = document.getElementById('shareForm');
+        shareForm.submit();
+      }
+    </script>
+  </body>
+</html>

@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>User Dashboard</title>
+    <link rel="stylesheet" href={{url_for('static', filename='nav.css')}}>
+    <div class="topNav">
+      <a href={{ url_for('index') }}><img src={{url_for('static', filename='logo.png')}} class="icon" width="auto" height="50vh"></a>
+    </div>
+    <style>
+      @import url('https://fonts.googleapis.com/css2?family=Montserrat&display=swap');
+      .pagehref:hover {
+        background-color: #e7e7e7;
+      }
+      .pagehref {
+        background-color: white;
+      }
+      
+      .addDoc {
+        display: inline;
+        border-radius: 12px;
+        border-width: 0px;
+        background-color: black;
+        color: white;
+        padding: 3px;
+        padding-left: 5px;
+        padding-right: 5px;
+      }
+
+      .addDoc:hover, .deleteButton:hover {
+        background-color: #383838;
+      }
+      
+      .deleteButton {
+        border-radius: 12px;
+        border-width: 0px;
+        background-color: black;
+        color: white;
+        padding: 3px;
+        padding-left: 5px;
+        padding-right: 5px;
+      }
+    </style>
+  </head>
+  <body style="font-family: 'Montserrat', sans-serif;">
+    <div class="content" style="text-align: center;">
+      <h1>Welcome, {{ username }}!</h1>
+      
+      <form method="POST" action="/dashboard">
+        <input type="text" name="title" style="padding: 8px; border-radius: 5px; border: none;" placeholder="Enter title">
+        <input type="submit" value="Add Document" style="padding: 10px;" class="addDoc">
+      </form>
+      
+      <h2>Personal Documents:</h2>
+      {% if personal_notes|length > 0 %}
+        {% for note in personal_notes %}
+          <a href="/note/{{ note['id'] }}">
+            <button style="width: 100%; border: none; border-top: 1px solid #eaeaea;" class="pagehref">
+              <br>
+              {{ note['title'] }}
+              <form method="POST" action="/delete/{{ note['id'] }}" style="display: inline;">
+                <input type="submit" value="Delete" style="padding: 5px;" class="deleteButton"><br><br>
+              </form>
+            </button>
+          </a>
+        {% endfor %}
+      {% else %}
+        <p>No personal notes available.</p>
+      {% endif %}
+
+      <h2>Shared Documents:</h2>
+      {% if shared_notes|length > 0 %}
+        {% for note in shared_notes %}
+          <a href="/shared_note/{{ note['id'] }}">
+            <button style="width: 100%; border: none; border-top: 1px solid #eaeaea;" class="pagehref">
+              <br>
+              {{ note['title'] }}
+            </button>
+          </a>
+        {% endfor %}
+      {% else %}
+        <p>No shared notes available.</p>
+      {% endif %}
+
+      <p><a href="/signout" style="text-decoration:none; color: blue;">Sign out</a></p>
+    </div>
+  </body>
+</html>

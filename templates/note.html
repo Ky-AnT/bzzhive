@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <style>
+      @import url('https://fonts.googleapis.com/css2?family=Montserrat&display=swap');
+      .titleInput {
+        border: none;
+        outline: none;
+        font-size: 20px;
+        text-overflow: ellipsis
+      }
+
+      .titleInput:focus {
+        border-bottom: 1px solid #f5b942;
+        transition: width 1s;
+      }
+
+      .sharedUsers {
+        font-family: Montserrat;
+        font-size: 15px;
+        width: 100px;
+        overflow: hidden;
+        border: none;
+        text-overflow: ellipsis; 
+        background-color: white;
+        pointer-events: none;
+        background-color: inherit;
+      }
+
+
+      .shareButton {
+        border: none;
+        background-color: #007bff;
+        color: white;
+        padding: 5px 10px;
+        border-radius: 5px;
+        cursor: pointer;
+      }
+      .removeButton {
+        border: none;
+        background-color: red;
+        color: white;
+        padding: 5px 10px;
+        border-radius: 5px;
+        cursor: pointer;
+      }
+      .readOnly {
+        background-color: #f1f1f1;
+      }
+      textarea {
+        font-family: Calibri, Arial, sans-serif;
+        /*border: 1px solid #ccc;*/
+        border: none;
+        border-radius: 5px;
+        padding: 20px;
+        box-shadow: 0px 0px 5px rgba(0, 0, 0, 0.1);
+        background-color: #fff;
+        white-space: pre-wrap;
+      }
+
+      .shareDiv {
+        margin-left: 50%;
+        position: fixed;
+        border: none;
+        border-radius: 5px;
+        padding: 20px;
+        box-shadow: 0px 0px 5px rgba(0, 0, 0, 0.1);
+        background-color: #fff;
+        width: 10vw;
+        right: 10%;
+        margin-top: 4%;
+      }
+
+
+    </style>
+    
+  </head>
+  
+  <body style="text-align: center; font-family: Montserrat">
+    {%if not shared_doc %}
+      <div class="shareDiv">
+        <button id=toggleBtn class="shareButton" onclick="shareNote()">View sharing permissions</button>
+    
+        <form id="shareForm" style="display: none;" method="POST" action="/share_note/{{ note['id'] }}">
+            <br>
+            <input type="text" autocomplete="off" style="border-radius: 5px; border: none; padding: 10px;" name="shared_with" placeholder="Username" required><br><br>
+            <input type="button" class="shareButton" value="Share" onclick="submitShareForm()">
+        </form>
+        {% if shared_with %}
+        <div id="sharedWithDiv" style="display: none;">
+
+        <p>Shared with:</p>
+            {% for user in shared_with %}
+            
+                <form class="removeForm" method="POST" action="/remove_shared_user/{{ note['id'] }}">
+                    <p><input class="sharedUsers" type="input" name="username" value="{{ user }}"><button class="removeButton" type="submit" onclick="return confirmRemove('{{ user }}')">&#10006;</button></p>
+                </form>
+            
+            {% endfor %}
+        </div>
+
+        {% else %}
+            <p>No shared users.</p>
+            
+        {% endif %}
+      </div>
+    {% endif %}
+
+    <form method="POST" id="noteForm" action="/note/{{ note['id'] }}" style="margin-top: 2%">
+    {% if not shared_doc %}
+      <input class="titleInput" type="text" name="title" value="{{ note['title'] }}" placeholder="Title">
+      <input type="submit" value="Save Changes" style="background-color: #f5b942; color: white; padding: 5px 10px; border-radius: 5px; border: none;">
+    {% endif %}
+      <br><br>
+      <textarea style="outline-width: 0px; height: 60vh; resize: none; width: 30%" name="content" rows="10" cols="50" {% if shared_doc %}disabled{% endif %}>{{ note['content'] }}</textarea> 
+      {% if shared_with %}
+        {% for user in shared_with %}
+          <input type="hidden" name="shared_with[]" value="{{ user }}">
+        {% endfor %}
+      {% endif %}
+    </form>
+    
+    
+    {{ error }}
+    
+    <p><a href="/dashboard" style="text-decoration: none; color: blue;">Back to Dashboard</a></p>
+    
+    <script>
+      function shareNote() {
+        var shareForm = document.getElementById('shareForm');
+        if (shareForm.style.display == 'none') {
+            shareForm.style.display = 'block';
+            var sharedWith = document.getElementById('sharedWithDiv');
+            sharedWith.style.display = 'block';
+        } else {
+            shareForm.style.display = 'none';
+            var sharedWith = document.getElementById('sharedWithDiv');
+            sharedWith.style.display = 'none';
+        }
+        
+        
+      }
+      
+      function submitShareForm() {
+        var shareForm = document.getElementById('shareForm');
+        shareForm.submit();
+      }
+
+      function confirmRemove(username) {
+        return confirm('Are you sure you want to remove ' + username + ' from the shared users?');
+      }
+
+      document.addEventListener('keydown', function(event) {
+        if ((event.ctrlKey || event.metaKey) && event.key === 's') {
+          event.preventDefault(); // Prevent default browser save action
+          document.getElementById('noteForm').submit(); // Submit the form
+        }
+      });
+    </script>
+  </body>
+</html>
